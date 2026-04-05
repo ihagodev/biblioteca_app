@@ -48,7 +48,8 @@ Ambientes de produção em cloud (Railway, Render, Cloudflare, etc.) bloqueiam c
 ```
 biblioteca_app/
 ├── index.php                  # Entrada única — roteamento por ?page=
-├── composer.json              # Declara requisito PHP 8.2 (usado pelo Railway)
+├── Dockerfile                 # Imagem PHP 8.2-cli, porta 8080 (usado pelo Railway)
+├── composer.json              # Declara requisito PHP 8.2
 │
 ├── app/
 │   ├── config/
@@ -126,7 +127,7 @@ git push -u origin main
 1. Acesse [railway.app](https://railway.app) e faça login
 2. **New Project → Deploy from GitHub repo**
 3. Selecione o repositório criado no passo anterior
-4. O Railway detecta o `composer.json` e configura PHP 8.2 automaticamente
+4. O Railway detecta o `Dockerfile` e faz o build automaticamente (PHP 8.2, porta 8080)
 
 ### 3. Adicionar a variável de ambiente
 
@@ -161,3 +162,21 @@ define('SUPABASE_SCHEMA', 'lib');
 ```
 
 Tabelas principais: `aluno`, `livro`, `autor`, `editora`, `livro_autor`, `emprestimo`, `emprestimo_livro`.
+
+### Configuração obrigatória no Supabase
+
+Por padrão o Supabase só expõe o schema `public` via REST API. É necessário:
+
+**1. Expor o schema `lib`**
+
+Supabase Dashboard → **Integrations → Data API → Settings → Exposed schemas** → adicionar `lib`.
+
+**2. Conceder permissões às roles**
+
+No **SQL Editor**, executar:
+
+```sql
+GRANT USAGE ON SCHEMA lib TO anon, authenticated, service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA lib TO anon, authenticated, service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA lib TO anon, authenticated, service_role;
+```
