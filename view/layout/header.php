@@ -4,18 +4,9 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Biblioteca</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="stylesheet" href="/bd/web/biblioteca_app/app/assets/style.css"/>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] }
-        }
-      }
-    }
-  </script>
+  <link rel="stylesheet" href="app/assets/tailwind.min.css"/>
+  <link rel="stylesheet" href="app/assets/style.css"/>
   <style>
     /* Fallback inline — garante visual mesmo sem CDN */
     body { background: #f8fafc; margin: 0; }
