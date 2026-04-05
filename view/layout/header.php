@@ -36,12 +36,12 @@
     }
     .nav-brand-icon {
       width: 32px; height: 32px; border-radius: 8px;
-      background: linear-gradient(135deg,#6366f1,#8b5cf6);
+      background: #d97706;
       display: flex; align-items: center; justify-content: center;
       color: #fff; font-weight: 700; font-size: 13px;
     }
-    .nav-brand-text { color: #fff; font-weight: 600; font-size: 15px; letter-spacing: -0.3px; }
-    .nav-brand-text span { color: #818cf8; }
+    .nav-brand-text { color: #fafaf9; font-weight: 600; font-size: 15px; letter-spacing: -0.3px; }
+    .nav-brand-text span { color: #d97706; }
     .nav-links { display: flex; align-items: center; gap: 2px; }
     .nav-link {
       padding: 7px 14px; border-radius: 8px;
@@ -66,9 +66,9 @@
     <!-- Logo -->
     <a href="index.php" class="nav-brand flex items-center gap-2.5 group shrink-0">
       <div class="nav-brand-icon w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-           style="background: linear-gradient(135deg,#6366f1,#8b5cf6);">B</div>
-      <span class="nav-brand-text text-white font-semibold text-base tracking-tight">
-        Biblio<span class="text-indigo-400" style="color:#818cf8;">teca</span>
+           style="background:#d97706;">B</div>
+      <span class="nav-brand-text font-semibold text-base tracking-tight">
+        Biblio<span style="color:#d97706;">teca</span>
       </span>
     </a>
 

@@ -94,64 +94,67 @@ switch ($page) {
     ];
   ?>
   <div>
-    <div class="flex items-center justify-between mb-4">
-      <p class="text-xs font-bold uppercase tracking-widest text-gray-400">Acervo em destaque</p>
-      <a href="?page=livro" style="font-size:.78rem;color:#d97706;font-weight:600;text-decoration:none;">Ver todos →</a>
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-widest mb-1" style="color:#a8a29e;">Acervo</p>
+        <h2 class="text-2xl font-extrabold" style="color:#1c1917;">Livros em Destaque</h2>
+      </div>
+      <a href="?page=livro" style="font-size:.82rem;color:#d97706;font-weight:600;text-decoration:none;">Ver todos →</a>
     </div>
 
     <?php if (empty($livrosDestaque)): ?>
       <div class="text-center py-12 text-gray-400 text-sm">Nenhum livro cadastrado ainda.</div>
     <?php else: ?>
-    <!-- Prateleira com scroll horizontal -->
-    <div style="display:flex; gap:16px; overflow-x:auto; padding-bottom:12px; scrollbar-width:thin; scrollbar-color:#d6cfc7 transparent;">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
       <?php foreach ($livrosDestaque as $i => $livro):
-        $p = $palettes[$i % count($palettes)];
-        $titulo  = htmlspecialchars($livro['nm_livro']);
-        $autor   = htmlspecialchars($livro['autores'] ?? '—');
-        $editora = htmlspecialchars($livro['nm_editora'] ?? '');
+        $p      = $palettes[$i % count($palettes)];
+        $titulo = htmlspecialchars($livro['nm_livro']);
+        $autor  = htmlspecialchars($livro['autores'] ?? '—');
+        $editora= htmlspecialchars($livro['nm_editora'] ?? '');
       ?>
-      <a href="?page=livro_detalhe&id=<?= $livro['id_livro'] ?>" title="<?= $titulo ?>" style="text-decoration:none; flex-shrink:0;">
+      <a href="?page=livro_detalhe&id=<?= $livro['id_livro'] ?>" style="text-decoration:none;" class="group">
+
         <!-- Capa -->
         <div style="
-          width:130px; height:190px; border-radius:4px 10px 10px 4px;
+          width:100%; aspect-ratio:2/3;
           background:<?= $p['bg'] ?>;
+          border-radius:4px 10px 10px 4px;
           position:relative; overflow:hidden;
-          box-shadow: 4px 4px 0 rgba(0,0,0,0.18), 8px 8px 20px rgba(0,0,0,0.22);
-          transition: transform .2s ease, box-shadow .2s ease;
+          box-shadow:4px 6px 18px rgba(0,0,0,0.2);
+          transition:transform .2s ease, box-shadow .2s ease;
           display:flex; flex-direction:column; justify-content:space-between;
-          padding:14px 12px 12px;
-          cursor:pointer;"
-          onmouseover="this.style.transform='translateY(-6px) rotate(1deg)';this.style.boxShadow='6px 10px 28px rgba(0,0,0,0.3)'"
-          onmouseout="this.style.transform='';this.style.boxShadow='4px 4px 0 rgba(0,0,0,0.18), 8px 8px 20px rgba(0,0,0,0.22)'">
+          padding:14px 12px 12px; margin-bottom:12px;"
+          onmouseover="this.style.transform='translateY(-5px)';this.style.boxShadow='6px 14px 28px rgba(0,0,0,0.28)'"
+          onmouseout="this.style.transform='';this.style.boxShadow='4px 6px 18px rgba(0,0,0,0.2)'">
 
-          <!-- Lombada esquerda -->
           <div style="position:absolute;left:0;top:0;bottom:0;width:6px;background:rgba(0,0,0,0.25);border-radius:4px 0 0 4px;"></div>
+          <div style="position:absolute;right:-20px;top:-20px;width:90px;height:90px;border-radius:50%;background:<?= $p['accent'] ?>;"></div>
+          <div style="position:absolute;right:8px;bottom:44px;width:38px;height:38px;border-radius:50%;background:<?= $p['accent'] ?>;"></div>
 
-          <!-- Forma decorativa -->
-          <div style="
-            position:absolute; right:-18px; top:-18px;
-            width:90px; height:90px; border-radius:50%;
-            background:<?= $p['accent'] ?>;"></div>
-          <div style="
-            position:absolute; right:10px; bottom:40px;
-            width:40px; height:40px; border-radius:50%;
-            background:<?= $p['accent'] ?>;"></div>
-
-          <!-- Título -->
-          <div style="position:relative; z-index:1;">
-            <div style="font-size:.65rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:<?= $p['text'] ?>; opacity:.6; margin-bottom:5px;">
-              <?= $editora ?>
-            </div>
-            <div style="font-size:.82rem; font-weight:800; line-height:1.25; color:<?= $p['text'] ?>; word-break:break-word;">
-              <?= mb_strimwidth($livro['nm_livro'], 0, 42, '…') ?>
+          <div style="position:relative;z-index:1;">
+            <div style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:<?= $p['text'] ?>;opacity:.55;margin-bottom:5px;"><?= $editora ?></div>
+            <div style="font-size:.8rem;font-weight:800;line-height:1.25;color:<?= $p['text'] ?>;word-break:break-word;">
+              <?= mb_strimwidth($livro['nm_livro'], 0, 44, '…') ?>
             </div>
           </div>
-
-          <!-- Autor -->
-          <div style="position:relative; z-index:1; font-size:.68rem; color:<?= $p['text'] ?>; opacity:.7; line-height:1.3;">
-            <?= mb_strimwidth($autor, 0, 30, '…') ?>
+          <div style="position:relative;z-index:1;font-size:.65rem;color:<?= $p['text'] ?>;opacity:.65;line-height:1.3;">
+            <?= mb_strimwidth($autor, 0, 28, '…') ?>
           </div>
         </div>
+
+        <!-- Info abaixo da capa -->
+        <div>
+          <div style="font-size:.82rem;font-weight:700;color:#1c1917;line-height:1.3;margin-bottom:3px;">
+            <?= mb_strimwidth($titulo, 0, 36, '…') ?>
+          </div>
+          <div style="font-size:.74rem;color:#a8a29e;">
+            <?= mb_strimwidth($autor, 0, 28, '…') ?>
+          </div>
+          <div style="margin-top:8px;font-size:.7rem;font-weight:600;color:#d97706;">
+            Ver detalhes →
+          </div>
+        </div>
+
       </a>
       <?php endforeach; ?>
     </div>
