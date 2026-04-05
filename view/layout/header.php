@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="stylesheet" href="app/assets/style.css"/>
+  <script src="app/assets/app.js" defer></script>
   <script>
     tailwind.config = {
       theme: {

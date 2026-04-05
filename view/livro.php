@@ -50,6 +50,16 @@ $livros   = listarLivroCompleto();
 $editoras = listar('editora');
 $autores  = listar('autor');
 
+// Label inicial para o select pesquisável de editora
+$editoraValor = $random['id_editora'] ?? $editando['id_editora'] ?? '';
+$editoraLabel = '';
+foreach ($editoras as $_ed) {
+    if ($_ed['id_editora'] == $editoraValor) {
+        $editoraLabel = $_ed['nm_editora'] . ' — ' . $_ed['cidade'];
+        break;
+    }
+}
+
 if (isset($_GET['random']) && !empty($editoras) && !empty($autores)) {
     $edRand = $editoras[array_rand($editoras)];
     $auRand = $autores[array_rand($autores)];
@@ -107,7 +117,8 @@ if (isset($_GET['random']) && !empty($editoras) && !empty($autores)) {
         </h2>
       </div>
 
-      <form method="POST" action="?page=livro" class="space-y-5">
+      <form method="POST" action="?page=livro" class="space-y-5"
+        onsubmit="var ok=document.querySelectorAll('#autor-lista input:checked').length>0;if(!ok){alert('Selecione ao menos um autor.');return false;}">
 
         <?php if ($editando): ?>
           <input type="hidden" name="id_livro"
@@ -144,33 +155,96 @@ if (isset($_GET['random']) && !empty($editoras) && !empty($autores)) {
           </div>
         </div>
 
-        <!-- id_editora -->
+        <!-- id_editora — select pesquisável -->
         <div class="space-y-1.5 max-w-sm">
-          <label class="block text-sm font-semibold text-gray-700" for="id_editora">Editora</label>
-          <select class="input-field" id="id_editora" name="id_editora" required>
-            <option value="">— Selecione a editora —</option>
-            <?php foreach ($editoras as $ed): ?>
-              <option value="<?= htmlspecialchars($ed['id_editora']) ?>"
-                <?= (($random['id_editora'] ?? null) == $ed['id_editora'] || (isset($editando['id_editora']) && $editando['id_editora'] == $ed['id_editora'])) ? 'selected' : '' ?>>
+          <label class="block text-sm font-semibold text-gray-700">Editora</label>
+          <div class="ss-wrap">
+            <input type="hidden" name="id_editora" class="ss-value"
+                   value="<?= htmlspecialchars($editoraValor) ?>" data-required>
+            <div style="position:relative;">
+              <input type="text" class="input-field ss-search"
+                     placeholder="Buscar editora…" autocomplete="off"
+                     value="<?= htmlspecialchars($editoraLabel) ?>">
+              <span class="ss-chevron">▾</span>
+            </div>
+            <ul class="ss-dropdown">
+              <li class="ss-empty">Nenhuma editora encontrada.</li>
+              <?php foreach ($editoras as $ed): ?>
+              <li class="ss-option" data-value="<?= htmlspecialchars($ed['id_editora']) ?>">
                 <?= htmlspecialchars($ed['nm_editora']) ?> — <?= htmlspecialchars($ed['cidade']) ?>
-              </option>
-            <?php endforeach; ?>
-          </select>
+              </li>
+              <?php endforeach; ?>
+            </ul>
+          </div>
         </div>
 
-        <!-- autores[] -->
+        <!-- autores[] — lista com busca -->
         <div class="space-y-1.5">
-          <label class="block text-sm font-semibold text-gray-700" for="autores">Autores</label>
-          <select class="input-field" id="autores" name="autores[]" multiple required>
-            <?php foreach ($autores as $au): ?>
-              <option value="<?= htmlspecialchars($au['id_autor']) ?>"
-                <?= in_array($au['id_autor'], $autoresSelecionados) ? 'selected' : '' ?>>
-                <?= htmlspecialchars($au['nm_autor']) ?> — <?= htmlspecialchars($au['nacionalidade']) ?>
-              </option>
+          <label class="block text-sm font-semibold text-gray-700">
+            Autores
+            <span class="text-xs font-normal text-gray-400 ml-1">(selecione um ou mais)</span>
+          </label>
+
+          <div class="relative">
+            <span class="absolute inset-y-0 left-3 flex items-center text-gray-400 pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+              </svg>
+            </span>
+            <input type="text" placeholder="Buscar por nome ou nacionalidade…"
+              class="input-field pl-9" oninput="filtrarAutores(this.value)">
+          </div>
+
+          <div id="autor-lista"
+            style="max-height:220px;overflow-y:auto;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">
+            <?php foreach ($autores as $au):
+              $checked = in_array($au['id_autor'], $autoresSelecionados) ? 'checked' : '';
+            ?>
+            <label class="autor-item flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-amber-50/50 border-b border-gray-50 last:border-0"
+              data-nome="<?= strtolower(htmlspecialchars($au['nm_autor'])) ?>"
+              data-nac="<?= strtolower(htmlspecialchars($au['nacionalidade'] ?? '')) ?>">
+              <input type="checkbox" name="autores[]"
+                value="<?= htmlspecialchars($au['id_autor']) ?>" <?= $checked ?>
+                class="shrink-0 accent-amber-500 w-4 h-4">
+              <div class="min-w-0">
+                <div class="text-sm font-semibold text-gray-900"><?= htmlspecialchars($au['nm_autor']) ?></div>
+                <?php if (!empty($au['nacionalidade'])): ?>
+                <div class="text-xs text-gray-400"><?= htmlspecialchars($au['nacionalidade']) ?></div>
+                <?php endif; ?>
+              </div>
+            </label>
             <?php endforeach; ?>
-          </select>
-          <p class="text-xs text-gray-400">Segure Ctrl (ou ⌘) para selecionar múltiplos autores</p>
+            <div id="autor-nenhum" class="hidden px-4 py-5 text-center text-sm text-gray-400">
+              Nenhum autor encontrado.
+            </div>
+          </div>
+
+          <p id="autor-contador" class="text-xs text-gray-400"></p>
         </div>
+
+        <script>
+        (function () {
+          function atualizarContadorAutor() {
+            var n = document.querySelectorAll('#autor-lista input:checked').length;
+            document.getElementById('autor-contador').textContent =
+              n > 0 ? n + ' autor(es) selecionado(s)' : '';
+          }
+          document.getElementById('autor-lista').addEventListener('change', atualizarContadorAutor);
+          atualizarContadorAutor();
+
+          window.filtrarAutores = function (q) {
+            q = q.toLowerCase().trim();
+            var items = document.querySelectorAll('#autor-lista .autor-item');
+            var n = 0;
+            items.forEach(function (item) {
+              var match = !q || item.dataset.nome.includes(q) || item.dataset.nac.includes(q);
+              item.style.display = match ? '' : 'none';
+              if (match) n++;
+            });
+            document.getElementById('autor-nenhum').classList.toggle('hidden', n > 0);
+          };
+        })();
+        </script>
 
         <div class="flex items-center gap-3 flex-wrap pt-2">
           <button type="submit" class="btn-primary">
@@ -189,14 +263,25 @@ if (isset($_GET['random']) && !empty($editoras) && !empty($autores)) {
 
   <!-- ── TABLE CARD ── -->
   <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-      <div>
-        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Registros</span>
-        <h2 class="text-lg font-bold text-gray-900 mt-0.5">Lista de Livros</h2>
+    <div class="px-6 py-4 border-b border-gray-100">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Registros</span>
+          <h2 class="text-lg font-bold text-gray-900 mt-0.5">Lista de Livros</h2>
+        </div>
+        <span class="bg-gray-100 text-gray-500 text-xs font-bold px-2.5 py-1 rounded-full shrink-0">
+          <?= count($livros) ?> <?= count($livros) === 1 ? 'registro' : 'registros' ?>
+        </span>
       </div>
-      <span class="bg-gray-100 text-gray-500 text-xs font-bold px-2.5 py-1 rounded-full">
-        <?= count($livros) ?> <?= count($livros) === 1 ? 'registro' : 'registros' ?>
-      </span>
+      <div class="relative">
+        <span class="absolute inset-y-0 left-3 flex items-center text-gray-400 pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+          </svg>
+        </span>
+        <input type="text" class="input-field pl-9 text-sm" placeholder="Buscar por título, ISBN, autor ou editora…"
+          oninput="filtrarTabela(this,'livro-tbody')">
+      </div>
     </div>
 
     <?php if (empty($livros)): ?>
@@ -219,9 +304,12 @@ if (isset($_GET['random']) && !empty($editoras) && !empty($autores)) {
               <th class="px-5 py-3.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Ações</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-50">
+          <tbody id="livro-tbody" class="divide-y divide-gray-50">
+            <tr id="livro-tbody-empty" style="display:none;">
+              <td colspan="7" class="px-5 py-8 text-center text-sm text-gray-400">Nenhum resultado encontrado.</td>
+            </tr>
             <?php foreach ($livros as $l): ?>
-              <tr class="hover:bg-indigo-50/30 group">
+              <tr class="hover:bg-indigo-50/30 group filterable">
                 <td class="px-5 py-4 text-gray-400 font-mono text-xs font-semibold">#<?= htmlspecialchars($l['id_livro']) ?></td>
                 <td class="px-5 py-4">
                   <span class="font-semibold text-gray-900"><?= htmlspecialchars($l['nm_livro']) ?></span>

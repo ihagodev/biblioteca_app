@@ -201,3 +201,50 @@ select[multiple] { min-height: 144px; }
 
 /* ── Table row transition ── */
 tbody tr { transition: background-color 0.1s ease; }
+
+/* ── Searchable Select (.ss-wrap) ── */
+.ss-wrap { position: relative; }
+
+.ss-dropdown {
+  position: absolute;
+  z-index: 100;
+  width: 100%;
+  max-height: 220px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,.1);
+  margin-top: 4px;
+  padding: 4px 0;
+  list-style: none;
+  display: none;
+}
+
+.ss-option {
+  padding: 9px 14px;
+  font-size: .875rem;
+  color: #374151;
+  cursor: pointer;
+  transition: background .1s;
+  outline: none;
+}
+.ss-option:hover,
+.ss-option:focus { background: #fef3c7; color: #92400e; }
+
+.ss-empty {
+  padding: 12px 14px;
+  font-size: .875rem;
+  color: #9ca3af;
+  text-align: center;
+}
+
+.ss-chevron {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  pointer-events: none;
+  font-size: .7rem;
+}

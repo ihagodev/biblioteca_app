@@ -42,6 +42,10 @@ $alunos = listar('aluno');
 $livros = listarLivroCompleto();
 $dados  = listarEmprestimosCompleto();
 
+// Label inicial para o select pesquisável de aluno
+$alunoValor = '';
+$alunoLabel = '';
+
 $randomEmp = [];
 if (isset($_GET['random']) && !empty($alunos) && !empty($livros)) {
     $aRand = $alunos[array_rand($alunos)];
@@ -51,6 +55,16 @@ if (isset($_GET['random']) && !empty($alunos) && !empty($livros)) {
         'livros'               => [$lRand['id_livro']],
         'dt_devolucao_prevista'=> gerarDtDevolucaoPrevista(),
     ];
+}
+
+$alunoValor = $randomEmp['registro_aluno'] ?? '';
+if ($alunoValor) {
+    foreach ($alunos as $_a) {
+        if ($_a['registro_aluno'] == $alunoValor) {
+            $alunoLabel = $_a['nm_aluno'] . ' — ' . $_a['curso'] . ' (Reg. ' . $_a['registro_aluno'] . ')';
+            break;
+        }
+    }
 }
 ?>
 
@@ -86,20 +100,27 @@ if (isset($_GET['random']) && !empty($alunos) && !empty($livros)) {
       <form method="POST" action="?page=emprestimo" class="space-y-5"
         onsubmit="var ok=document.querySelectorAll('#livro-lista input:checked').length>0;if(!ok){alert('Selecione ao menos um livro.');return false;}">
 
-        <!-- registro_aluno -->
+        <!-- registro_aluno — select pesquisável -->
         <div class="space-y-1.5">
-          <label class="block text-sm font-semibold text-gray-700" for="registro_aluno">Aluno</label>
-          <select class="input-field" id="registro_aluno" name="registro_aluno" required>
-            <option value="">— Selecione o aluno —</option>
-            <?php foreach ($alunos as $a): ?>
-              <option value="<?= htmlspecialchars($a['registro_aluno']) ?>"
-                <?= ($randomEmp['registro_aluno'] ?? null) == $a['registro_aluno'] ? 'selected' : '' ?>>
-                <?= htmlspecialchars($a['nm_aluno']) ?>
-                — <?= htmlspecialchars($a['curso']) ?>
-                (Reg. <?= htmlspecialchars($a['registro_aluno']) ?>)
-              </option>
-            <?php endforeach; ?>
-          </select>
+          <label class="block text-sm font-semibold text-gray-700">Aluno</label>
+          <div class="ss-wrap">
+            <input type="hidden" name="registro_aluno" class="ss-value"
+                   value="<?= htmlspecialchars($alunoValor) ?>" data-required>
+            <div style="position:relative;">
+              <input type="text" class="input-field ss-search"
+                     placeholder="Buscar aluno por nome ou curso…" autocomplete="off"
+                     value="<?= htmlspecialchars($alunoLabel) ?>">
+              <span class="ss-chevron">▾</span>
+            </div>
+            <ul class="ss-dropdown">
+              <li class="ss-empty">Nenhum aluno encontrado.</li>
+              <?php foreach ($alunos as $a): ?>
+              <li class="ss-option" data-value="<?= htmlspecialchars($a['registro_aluno']) ?>">
+                <?= htmlspecialchars($a['nm_aluno']) ?> — <?= htmlspecialchars($a['curso']) ?> (Reg. <?= htmlspecialchars($a['registro_aluno']) ?>)
+              </li>
+              <?php endforeach; ?>
+            </ul>
+          </div>
         </div>
 
         <!-- livros[] -->
@@ -207,14 +228,25 @@ if (isset($_GET['random']) && !empty($alunos) && !empty($livros)) {
 
   <!-- ── TABLE CARD ── -->
   <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-      <div>
-        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Consulta</span>
-        <h2 class="text-lg font-bold text-gray-900 mt-0.5">Todos os Empréstimos</h2>
+    <div class="px-6 py-4 border-b border-gray-100">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Consulta</span>
+          <h2 class="text-lg font-bold text-gray-900 mt-0.5">Todos os Empréstimos</h2>
+        </div>
+        <span class="bg-gray-100 text-gray-500 text-xs font-bold px-2.5 py-1 rounded-full shrink-0">
+          <?= count($dados) ?> <?= count($dados) === 1 ? 'registro' : 'registros' ?>
+        </span>
       </div>
-      <span class="bg-gray-100 text-gray-500 text-xs font-bold px-2.5 py-1 rounded-full">
-        <?= count($dados) ?> <?= count($dados) === 1 ? 'registro' : 'registros' ?>
-      </span>
+      <div class="relative">
+        <span class="absolute inset-y-0 left-3 flex items-center text-gray-400 pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+          </svg>
+        </span>
+        <input type="text" class="input-field pl-9 text-sm" placeholder="Buscar por aluno, livro, curso ou status…"
+          oninput="filtrarTabela(this,'emp-tbody')">
+      </div>
     </div>
 
     <?php if (empty($dados)): ?>
@@ -239,7 +271,10 @@ if (isset($_GET['random']) && !empty($alunos) && !empty($livros)) {
               <th class="px-5 py-3.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Ação</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-50">
+          <tbody id="emp-tbody" class="divide-y divide-gray-50">
+            <tr id="emp-tbody-empty" style="display:none;">
+              <td colspan="9" class="px-5 py-8 text-center text-sm text-gray-400">Nenhum resultado encontrado.</td>
+            </tr>
             <?php foreach ($dados as $emp): ?>
               <?php
                 $hoje      = new DateTime();
@@ -247,7 +282,7 @@ if (isset($_GET['random']) && !empty($alunos) && !empty($livros)) {
                 $devolvido = !empty($emp['dt_devolucao_real']);
                 $atrasado  = !$devolvido && $prevista < $hoje;
               ?>
-              <tr class="hover:bg-amber-50/20 group">
+              <tr class="hover:bg-amber-50/20 group filterable">
 
                 <!-- ID -->
                 <td class="px-5 py-4 text-gray-400 font-mono text-xs font-semibold whitespace-nowrap">

@@ -133,14 +133,25 @@ $autores = listar('autor');
 
   <!-- ── TABLE CARD ── -->
   <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-      <div>
-        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Registros</span>
-        <h2 class="text-lg font-bold text-gray-900 mt-0.5">Lista de Autores</h2>
+    <div class="px-6 py-4 border-b border-gray-100">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Registros</span>
+          <h2 class="text-lg font-bold text-gray-900 mt-0.5">Lista de Autores</h2>
+        </div>
+        <span class="bg-gray-100 text-gray-500 text-xs font-bold px-2.5 py-1 rounded-full shrink-0">
+          <?= count($autores) ?> <?= count($autores) === 1 ? 'registro' : 'registros' ?>
+        </span>
       </div>
-      <span class="bg-gray-100 text-gray-500 text-xs font-bold px-2.5 py-1 rounded-full">
-        <?= count($autores) ?> <?= count($autores) === 1 ? 'registro' : 'registros' ?>
-      </span>
+      <div class="relative">
+        <span class="absolute inset-y-0 left-3 flex items-center text-gray-400 pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+          </svg>
+        </span>
+        <input type="text" class="input-field pl-9 text-sm" placeholder="Buscar por nome ou nacionalidade…"
+          oninput="filtrarTabela(this,'autor-tbody')">
+      </div>
     </div>
 
     <?php if (empty($autores)): ?>
@@ -160,9 +171,12 @@ $autores = listar('autor');
               <th class="px-5 py-3.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Ações</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-50">
+          <tbody id="autor-tbody" class="divide-y divide-gray-50">
+            <tr id="autor-tbody-empty" style="display:none;">
+              <td colspan="4" class="px-5 py-8 text-center text-sm text-gray-400">Nenhum resultado encontrado.</td>
+            </tr>
             <?php foreach ($autores as $a): ?>
-              <tr class="hover:bg-indigo-50/30 group">
+              <tr class="hover:bg-indigo-50/30 group filterable">
                 <td class="px-5 py-4 text-gray-400 font-mono text-xs font-semibold">#<?= htmlspecialchars($a['id_autor']) ?></td>
                 <td class="px-5 py-4">
                   <span class="font-semibold text-gray-900"><?= htmlspecialchars($a['nm_autor']) ?></span>
