@@ -2,7 +2,10 @@
 
 require_once __DIR__ . "/../dal/dal.php";
 
+$camposLivro = ['nm_livro', 'isbn', 'ano_publicacao', 'numero_edicao', 'id_editora'];
+
 function salvarLivro($dados, $autores) {
+    global $camposLivro;
 
     if (empty($dados['nm_livro'])) {
         throw new Exception("Nome do livro obrigatório");
@@ -16,10 +19,11 @@ function salvarLivro($dados, $autores) {
         throw new Exception("Editora obrigatória");
     }
 
-    return inserirLivro($dados, $autores);
+    return inserirLivro(array_intersect_key($dados, array_flip($camposLivro)), $autores);
 }
 
 function editarLivro($id, $dados, $autores) {
+    global $camposLivro;
 
     if (empty($dados['nm_livro'])) {
         throw new Exception("Nome do livro obrigatório");
@@ -33,7 +37,7 @@ function editarLivro($id, $dados, $autores) {
         throw new Exception("Editora obrigatória");
     }
 
-    return atualizarLivro($id, $dados, $autores);
+    return atualizarLivro($id, array_intersect_key($dados, array_flip($camposLivro)), $autores);
 }
 
 function removerLivro($id) {
