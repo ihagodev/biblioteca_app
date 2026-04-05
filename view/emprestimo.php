@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $alunos = listar('aluno');
-$livros = listar('livro');
+$livros = listarLivroCompleto();
 $dados  = listarEmprestimosCompleto();
 
 $randomEmp = [];
@@ -83,7 +83,8 @@ if (isset($_GET['random']) && !empty($alunos) && !empty($livros)) {
         <h2 class="text-xl font-bold text-gray-900 mt-0.5">Realizar Empréstimo</h2>
       </div>
 
-      <form method="POST" action="?page=emprestimo" class="space-y-5">
+      <form method="POST" action="?page=emprestimo" class="space-y-5"
+        onsubmit="var ok=document.querySelectorAll('#livro-lista input:checked').length>0;if(!ok){alert('Selecione ao menos um livro.');return false;}">
 
         <!-- registro_aluno -->
         <div class="space-y-1.5">
@@ -103,22 +104,87 @@ if (isset($_GET['random']) && !empty($alunos) && !empty($livros)) {
 
         <!-- livros[] -->
         <div class="space-y-1.5">
-          <label class="block text-sm font-semibold text-gray-700" for="livros">
+          <label class="block text-sm font-semibold text-gray-700">
             Livros
-            <span class="text-xs font-normal text-gray-400 ml-1">(Ctrl para múltiplos)</span>
+            <span class="text-xs font-normal text-gray-400 ml-1">(selecione um ou mais)</span>
           </label>
-          <select class="input-field" id="livros" name="livros[]" multiple required>
-            <?php foreach ($livros as $l): ?>
-              <option value="<?= htmlspecialchars($l['id_livro']) ?>"
-                <?= in_array($l['id_livro'], $randomEmp['livros'] ?? []) ? 'selected' : '' ?>>
-                <?= htmlspecialchars($l['nm_livro']) ?>
-                · Ed. <?= htmlspecialchars($l['numero_edicao']) ?>
-                (<?= htmlspecialchars($l['ano_publicacao']) ?>)
-                · ISBN <?= htmlspecialchars($l['isbn']) ?>
-              </option>
+
+          <!-- Busca -->
+          <div class="relative">
+            <span class="absolute inset-y-0 left-3 flex items-center text-gray-400 pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+              </svg>
+            </span>
+            <input type="text" id="livro-busca" placeholder="Buscar por título ou autor…"
+              class="input-field pl-9"
+              oninput="filtrarLivros(this.value)">
+          </div>
+
+          <!-- Lista de livros -->
+          <div id="livro-lista"
+            style="max-height:260px;overflow-y:auto;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">
+            <?php foreach ($livros as $l):
+              $autores = $l['autores'] ?? '';
+              $checked = in_array($l['id_livro'], $randomEmp['livros'] ?? []) ? 'checked' : '';
+            ?>
+            <label class="livro-item flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-amber-50/50 border-b border-gray-50 last:border-0"
+              data-titulo="<?= strtolower(htmlspecialchars($l['nm_livro'])) ?>"
+              data-autores="<?= strtolower(htmlspecialchars($autores)) ?>">
+              <input type="checkbox" name="livros[]"
+                value="<?= htmlspecialchars($l['id_livro']) ?>"
+                <?= $checked ?>
+                class="mt-0.5 shrink-0 accent-amber-500 w-4 h-4">
+              <div class="min-w-0">
+                <div class="text-sm font-semibold text-gray-900 leading-snug">
+                  <?= htmlspecialchars($l['nm_livro']) ?>
+                </div>
+                <?php if ($autores): ?>
+                <div class="text-xs text-gray-400 mt-0.5"><?= htmlspecialchars($autores) ?></div>
+                <?php endif; ?>
+                <div class="text-xs text-gray-300 mt-0.5 font-mono">
+                  Ed. <?= htmlspecialchars($l['numero_edicao']) ?>
+                  · <?= htmlspecialchars($l['ano_publicacao']) ?>
+                  · ISBN <?= htmlspecialchars($l['isbn']) ?>
+                </div>
+              </div>
+            </label>
             <?php endforeach; ?>
-          </select>
+            <div id="livro-nenhum" class="hidden px-4 py-6 text-center text-sm text-gray-400">
+              Nenhum livro encontrado.
+            </div>
+          </div>
+
+          <!-- Contador de selecionados -->
+          <p id="livro-contador" class="text-xs text-gray-400"></p>
         </div>
+
+        <script>
+        (function () {
+          function atualizarContador() {
+            var checked = document.querySelectorAll('#livro-lista input[type=checkbox]:checked').length;
+            var el = document.getElementById('livro-contador');
+            el.textContent = checked > 0 ? checked + ' livro(s) selecionado(s)' : '';
+          }
+
+          document.getElementById('livro-lista').addEventListener('change', atualizarContador);
+          atualizarContador();
+
+          window.filtrarLivros = function (q) {
+            q = q.toLowerCase().trim();
+            var items = document.querySelectorAll('#livro-lista .livro-item');
+            var visiveis = 0;
+            items.forEach(function (item) {
+              var titulo  = item.dataset.titulo  || '';
+              var autores = item.dataset.autores || '';
+              var match   = !q || titulo.includes(q) || autores.includes(q);
+              item.style.display = match ? '' : 'none';
+              if (match) visiveis++;
+            });
+            document.getElementById('livro-nenhum').classList.toggle('hidden', visiveis > 0);
+          };
+        })();
+        </script>
 
         <!-- dt_devolucao_prevista -->
         <div class="space-y-1.5 max-w-xs">

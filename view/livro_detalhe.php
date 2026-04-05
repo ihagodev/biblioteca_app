@@ -27,17 +27,12 @@ $p = $palettes[$livro['id_livro'] % count($palettes)];
 $autoresNomes = array_filter(array_map(fn($a) => $a['nm_autor'] ?? '', $livro['autores']));
 $autoresStr   = implode(', ', $autoresNomes) ?: '—';
 
-$sinopse = "Uma obra que atravessa o tempo e desafia as convenções do seu gênero. Ao longo de suas páginas,
-o leitor é conduzido por uma narrativa envolvente que explora os limites da condição humana, mesclando
-realidade e imaginação com rara habilidade. Cada capítulo revela novas camadas de significado, convidando
-à reflexão sobre temas universais como identidade, pertencimento e transformação.
-
-Escrita com precisão e sensibilidade, esta obra se destaca pela profundidade de seus personagens e pela
-riqueza dos cenários descritos. A narrativa avança em ritmo equilibrado, alternando momentos de intensa
-emoção com passagens contemplativas que convidam o leitor à pausa e à reflexão.
-
-Considerada uma leitura essencial por críticos e educadores, é indicada para quem busca não apenas
-entretenimento, mas uma experiência literária que permanece presente muito além da última página.";
+$sinopse = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque dictum bibendum turpis. Vestibulum ante ipsum primis in faucibus orci
+luctus et ultrices posuere cubilia curae; Vestibulum scelerisque rhoncus pretium. Nulla fringilla metus dignissim dolor facilisis, eget
+tincidunt nulla sollicitudin. Proin eget est ac dolor ullamcorper malesuada. Praesent at risus molestie, euismod augue sit amet, finibus
+augue. Proin id vehicula neque, in ullamcorper augue. Integer tortor erat, pellentesque vitae tincidunt non, varius eget enim. Cras
+accumsan ultricies tellus a tincidunt. Nunc sed maximus leo. Curabitur et mi accumsan, fringilla neque et, scelerisque justo. Vestibulum
+vehicula, dui at tincidunt feugiat, justo ante fringilla nisl, et hendrerit dolor lorem a odio.";
 ?>
 
 <div class="stagger space-y-6">
