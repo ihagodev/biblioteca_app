@@ -1,5 +1,7 @@
 # Biblioteca App
 
+**Acesse em: [biblioteca.ihago.dev](https://biblioteca.ihago.dev)**
+
 Sistema de gerenciamento de biblioteca escolar em PHP puro, com banco de dados hospedado no Supabase (PostgreSQL) acessado via REST API.
 
 ## Arquitetura
@@ -30,7 +32,7 @@ flowchart LR
 | **Editoras** | Manter catálogo de editoras |
 | **Empréstimos** | Registrar empréstimos de múltiplos livros, controlar devolução com status (Em aberto / Atrasado / Devolvido) |
 
-Todos os formulários possuem um botão **Aleatório** que gera dados fictícios para testes.
+Todos os formulários possuem um botão **Aleatório** que gera e envia dados fictícios automaticamente.
 
 ## Stack
 
@@ -79,50 +81,11 @@ biblioteca_app/
         └── footer.php
 ```
 
-## Deploy no Railway
-
-### 1. Criar repositório no GitHub
-
-Faça push da pasta `biblioteca_app` como raiz do repositório:
-
-```bash
-git init
-git add .
-git commit -m "first commit"
-git remote add origin https://github.com/seu-usuario/biblioteca-app.git
-git push -u origin main
-```
-
-### 2. Criar projeto no Railway
-
-1. Acesse [railway.app](https://railway.app) e faça login
-2. **New Project → Deploy from GitHub repo**
-3. Selecione o repositório criado no passo anterior
-4. O Railway detecta o `Dockerfile` e faz o build automaticamente (PHP 8.2, porta 8080)
-
-### 3. Adicionar a variável de ambiente
-
-No painel do Railway, acesse seu serviço e vá em:
-
-**Variables → New Variable**
-
-| Variável | Valor |
-|---|---|
-| `SUPABASE_KEY` | sua `service_role` key do Supabase |
-
-> Sem essa variável, todas as requisições ao banco retornarão erro 401.
-
-### 4. Deploy
-
-O Railway faz deploy automático após cada push no branch `main`. A URL pública é gerada em **Settings → Networking → Generate Domain**.
-
 ## Variáveis de ambiente
 
 | Variável | Onde definir | Descrição |
 |---|---|---|
 | `SUPABASE_KEY` | Railway → Variables | `service_role` key do projeto Supabase |
-
-O arquivo `.env.example` na raiz do projeto documenta as variáveis necessárias.
 
 ## Schema do banco
 
