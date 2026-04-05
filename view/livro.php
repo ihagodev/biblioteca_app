@@ -45,8 +45,9 @@ if (isset($_GET['delete'])) {
 }
 
 if (isset($_GET['edit'])) {
-    $editando = buscarLivroPorId($_GET['edit']);
-    $autoresSelecionados = array_column(listarAutoresDoLivro($_GET['edit']), 'id_autor');
+    $livroComAutores     = buscarLivroComAutores($_GET['edit']);
+    $editando            = $livroComAutores;
+    $autoresSelecionados = $livroComAutores['autores'] ?? [];
 }
 
 $livros   = listarLivros();
