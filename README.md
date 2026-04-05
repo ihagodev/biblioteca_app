@@ -63,14 +63,14 @@ biblioteca_app/
 ├── dal/
 │   └── dal.php                # Data Access Layer — todas as queries via REST API
 │
-├── controller/
+├── controller/               # Tratamento de exceções
 │   ├── alunoController.php
 │   ├── livroController.php
 │   ├── autorController.php
 │   ├── editoraController.php
 │   └── emprestimoController.php
 │
-└── view/
+└── view/                  # Páginas web
     ├── aluno.php
     ├── livro.php
     ├── autor.php
