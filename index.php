@@ -3,7 +3,7 @@ ob_start();
 
 $page = $_GET['page'] ?? 'home';
 
-$allowedPages = ['home','aluno','livro','autor','editora','emprestimo'];
+$allowedPages = ['home','aluno','livro','autor','editora','emprestimo','livro_detalhe'];
 if (!in_array($page, $allowedPages)) $page = 'home';
 
 require_once __DIR__ . "/view/layout/header.php";
@@ -13,7 +13,8 @@ switch ($page) {
     case 'livro':      require_once __DIR__ . "/view/livro.php";      break;
     case 'autor':      require_once __DIR__ . "/view/autor.php";      break;
     case 'editora':    require_once __DIR__ . "/view/editora.php";    break;
-    case 'emprestimo': require_once __DIR__ . "/view/emprestimo.php"; break;
+    case 'emprestimo':    require_once __DIR__ . "/view/emprestimo.php";     break;
+    case 'livro_detalhe': require_once __DIR__ . "/view/livro_detalhe.php"; break;
 
     default:
 
@@ -109,7 +110,7 @@ switch ($page) {
         $autor   = htmlspecialchars($livro['autores'] ?? '—');
         $editora = htmlspecialchars($livro['nm_editora'] ?? '');
       ?>
-      <a href="?page=livro" title="<?= $titulo ?>" style="text-decoration:none; flex-shrink:0;">
+      <a href="?page=livro_detalhe&id=<?= $livro['id_livro'] ?>" title="<?= $titulo ?>" style="text-decoration:none; flex-shrink:0;">
         <!-- Capa -->
         <div style="
           width:130px; height:190px; border-radius:4px 10px 10px 4px;

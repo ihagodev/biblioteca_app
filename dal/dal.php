@@ -200,6 +200,27 @@ function buscarLivroPorId($id) {
 }
 
 /**
+ * Busca um livro completo para a página de detalhe:
+ * título, ISBN, edição, ano, editora (nome + cidade) e autores (nome + nacionalidade).
+ */
+function buscarLivroDetalhe($id) {
+    $rows = sbRequest('GET', 'livro', [
+        'query' => "id_livro=eq.$id&select=*,editora(nm_editora,cidade),livro_autor(autor(nm_autor,nacionalidade))",
+    ]);
+    if (empty($rows)) return null;
+
+    $l = $rows[0];
+    $l['nm_editora'] = $l['editora']['nm_editora'] ?? null;
+    $l['cidade']     = $l['editora']['cidade']     ?? null;
+    $l['autores']    = array_map(
+        fn($la) => $la['autor'] ?? [],
+        $l['livro_autor'] ?? []
+    );
+    unset($l['editora'], $l['livro_autor']);
+    return $l;
+}
+
+/**
  * Busca um livro e a lista de IDs dos seus autores.
  */
 function buscarLivroComAutores($id) {
