@@ -47,14 +47,12 @@ Ambientes de produção em cloud (Railway, Render, Cloudflare, etc.) bloqueiam c
 
 ```
 biblioteca_app/
+├── Dockerfile                 # Imagem PHP 8.2-cli, porta 8080
 ├── index.php                  # Entrada única — roteamento por ?page=
-├── Dockerfile                 # Imagem PHP 8.2-cli, porta 8080 (usado pelo Railway)
-├── composer.json              # Declara requisito PHP 8.2
 │
 ├── app/
 │   ├── config/
-│   │   ├── supabase.php       # Cliente HTTP — função sbRequest()
-│   │   └── db.php             # Conexão MySQL local (apenas dev local)
+│   │   └── supabase.php       # Cliente HTTP — função sbRequest()
 │   ├── assets/
 │   │   └── style.css
 │   └── helpers/
@@ -80,33 +78,6 @@ biblioteca_app/
         ├── header.php
         └── footer.php
 ```
-
-## Desenvolvimento local (XAMPP)
-
-### Pré-requisitos
-
-- XAMPP com PHP 8.2+ e Apache
-- Extensão `curl` habilitada (está ativa por padrão no XAMPP)
-
-### Configuração
-
-1. Clone o repositório dentro de `C:\xampp\htdocs\`:
-
-```bash
-git clone <url-do-repo> C:\xampp\htdocs\biblioteca_app
-```
-
-2. Abra `app/config/supabase.php` e substitua o valor da chave:
-
-```php
-define('SUPABASE_KEY', getenv('SUPABASE_KEY') ?: 'sua_service_role_key_aqui');
-```
-
-> A chave está em: **Supabase Dashboard → seu projeto → Settings → API → service_role**
-
-3. Inicie o Apache no XAMPP e acesse `http://localhost/biblioteca_app`.
-
-> O arquivo `app/config/config.ini` (credenciais MySQL local) não está no repositório e não é necessário para o funcionamento online — o sistema usa exclusivamente a REST API do Supabase.
 
 ## Deploy no Railway
 
