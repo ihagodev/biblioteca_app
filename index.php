@@ -15,71 +15,99 @@ switch ($page) {
     case 'editora':    require_once __DIR__ . "/view/editora.php";    break;
     case 'emprestimo': require_once __DIR__ . "/view/emprestimo.php"; break;
 
-    default: ?>
+    default:
+
+    require_once __DIR__ . "/dal/dal.php";
+    $totalLivros  = count(listar('livro'));
+    $totalAlunos  = count(listar('aluno'));
+    $emprestimos  = listarEmprestimosCompleto();
+    $totalAtivos  = count(array_filter($emprestimos, fn($e) => empty($e['dt_devolucao_real'])));
+    $totalAtrasados = count(array_filter($emprestimos, function($e) {
+        return empty($e['dt_devolucao_real']) && new DateTime($e['dt_devolucao_prevista']) < new DateTime();
+    }));
+?>
 
 <!-- ══════════════════════ HOME ══════════════════════ -->
-<div class="stagger space-y-8">
+<div class="stagger space-y-6">
 
   <!-- Hero -->
-  <div class="relative overflow-hidden rounded-2xl hero-mesh p-8 sm:p-10 text-white shadow-2xl">
-    <!-- Decorative rings -->
-    <div class="ring-decoration" style="width:260px;height:260px;right:-60px;top:-80px;"></div>
-    <div class="ring-decoration" style="width:160px;height:160px;right:40px;top:20px;"></div>
-    <div class="ring-decoration" style="width:80px;height:80px;right:100px;top:80px;"></div>
+  <div class="relative overflow-hidden rounded-2xl shadow-xl" style="background:#1c1917; min-height:240px;">
 
-    <div class="relative z-10 max-w-xl">
-      <span class="inline-flex items-center gap-1.5 mb-3">
-        <span class="w-1.5 h-1.5 rounded-full bg-indigo-300 inline-block"></span>
-        <span class="text-indigo-200 text-xs font-semibold uppercase tracking-widest">Painel Principal</span>
+    <!-- Lombadas decorativas -->
+    <div class="absolute right-0 top-0 bottom-0 flex gap-1.5 p-5 opacity-40" style="width:200px;">
+      <div class="flex-1 rounded-lg" style="background:linear-gradient(180deg,#ef4444,#b91c1c); margin-top:10px;"></div>
+      <div class="flex-1 rounded-lg" style="background:linear-gradient(180deg,#3b82f6,#1d4ed8); margin-top:30px;"></div>
+      <div class="flex-1 rounded-lg" style="background:linear-gradient(180deg,#f59e0b,#b45309); margin-top:5px;"></div>
+      <div class="flex-1 rounded-lg" style="background:linear-gradient(180deg,#10b981,#065f46); margin-top:20px;"></div>
+      <div class="flex-1 rounded-lg" style="background:linear-gradient(180deg,#8b5cf6,#5b21b6); margin-top:0px;"></div>
+      <div class="flex-1 rounded-lg" style="background:linear-gradient(180deg,#ec4899,#9d174d); margin-top:15px;"></div>
+    </div>
+
+    <div class="relative z-10 p-8 sm:p-10" style="max-width:580px;">
+      <span class="inline-block text-xs font-bold uppercase tracking-widest mb-4" style="color:#a8a29e; letter-spacing:.12em;">
+        Biblioteca Escolar
       </span>
-      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-3 leading-tight">
-        Sistema de<br/>Biblioteca
+      <h1 class="font-extrabold leading-tight mb-3" style="font-size:clamp(1.6rem,4vw,2.4rem); color:#fafaf9;">
+        Seu acervo,<br/>organizado.
       </h1>
-      <p class="text-indigo-200/90 text-base leading-relaxed max-w-sm">
-        Gerencie alunos, acervo e empréstimos em um único lugar com facilidade e eficiência.
+      <p style="color:#a8a29e; font-size:.95rem; line-height:1.65; max-width:380px;">
+        Gerencie alunos, livros e empréstimos em um único painel — simples e eficiente.
       </p>
+
+      <!-- Stats -->
+      <div class="flex flex-wrap gap-8 mt-8">
+        <?php
+          $stats = [
+            ['val' => $totalLivros,   'label' => 'Livros no acervo',    'color' => '#3b82f6'],
+            ['val' => $totalAlunos,   'label' => 'Alunos cadastrados',  'color' => '#10b981'],
+            ['val' => $totalAtivos,   'label' => 'Empréstimos ativos',  'color' => '#f59e0b'],
+            ['val' => $totalAtrasados,'label' => 'Em atraso',           'color' => '#ef4444'],
+          ];
+          foreach ($stats as $st):
+        ?>
+        <div>
+          <div class="font-extrabold" style="font-size:1.75rem; color:<?= $st['color'] ?>; line-height:1;">
+            <?= $st['val'] ?>
+          </div>
+          <div style="color:#78716c; font-size:.75rem; margin-top:.2rem;"><?= $st['label'] ?></div>
+        </div>
+        <?php endforeach; ?>
+      </div>
     </div>
   </div>
 
-  <!-- Section label -->
+  <!-- Módulos -->
   <div>
-    <span class="text-xs font-semibold text-gray-400 uppercase tracking-widest">Acesso rápido</span>
-    <h2 class="text-lg font-bold text-gray-800 mt-0.5">Módulos do sistema</h2>
-  </div>
-
-  <!-- Shortcut grid -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-
+    <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Acesso rápido</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
     <?php
-      $shortcuts = [
-        ['page'=>'emprestimo','icon'=>'📚','label'=>'Principal',   'title'=>'Empréstimos', 'desc'=>'Registrar e devolver empréstimos de livros',      'color'=>'from-amber-500 to-orange-500',  'bg'=>'bg-amber-50', 'text'=>'text-amber-600'],
-        ['page'=>'aluno',     'icon'=>'🎓','label'=>'Cadastro',    'title'=>'Alunos',      'desc'=>'Cadastrar e gerenciar dados dos alunos',           'color'=>'from-emerald-500 to-teal-500',  'bg'=>'bg-emerald-50','text'=>'text-emerald-600'],
-        ['page'=>'livro',     'icon'=>'📖','label'=>'Acervo',      'title'=>'Livros',      'desc'=>'Cadastrar livros, vincular autores e editoras',    'color'=>'from-blue-500 to-indigo-500',   'bg'=>'bg-blue-50',   'text'=>'text-blue-600'],
-        ['page'=>'autor',     'icon'=>'✍️','label'=>'Referência',  'title'=>'Autores',     'desc'=>'Manter catálogo de autores do acervo',             'color'=>'from-violet-500 to-purple-600', 'bg'=>'bg-violet-50', 'text'=>'text-violet-600'],
-        ['page'=>'editora',   'icon'=>'🏛️','label'=>'Referência',  'title'=>'Editoras',    'desc'=>'Gerenciar editoras vinculadas ao acervo',          'color'=>'from-rose-500 to-pink-500',     'bg'=>'bg-rose-50',   'text'=>'text-rose-600'],
+      $modulos = [
+        ['page'=>'emprestimo','icon'=>'📚','title'=>'Empréstimos','desc'=>'Registrar retiradas e devoluções','spine'=>'#f59e0b'],
+        ['page'=>'livro',     'icon'=>'📖','title'=>'Livros',     'desc'=>'Acervo, autores e editoras',      'spine'=>'#3b82f6'],
+        ['page'=>'aluno',     'icon'=>'🎓','title'=>'Alunos',     'desc'=>'Cadastro de estudantes',          'spine'=>'#10b981'],
+        ['page'=>'autor',     'icon'=>'✍️','title'=>'Autores',    'desc'=>'Catálogo de autores',             'spine'=>'#8b5cf6'],
+        ['page'=>'editora',   'icon'=>'🏛️','title'=>'Editoras',   'desc'=>'Editoras do acervo',             'spine'=>'#ec4899'],
       ];
-      foreach ($shortcuts as $s):
+      foreach ($modulos as $m):
     ?>
-    <a href="?page=<?= $s['page'] ?>"
-       class="group bg-white rounded-2xl p-6 shadow-sm border border-gray-100 card-lift flex flex-col">
-      <!-- Icon -->
-      <div class="w-12 h-12 <?= $s['bg'] ?> rounded-xl flex items-center justify-center text-2xl mb-4
-                  transition-transform duration-200 group-hover:scale-110">
-        <?= $s['icon'] ?>
+    <a href="?page=<?= $m['page'] ?>"
+       class="group card-lift flex items-center gap-4 bg-white rounded-xl border border-gray-100 shadow-sm"
+       style="padding:1.1rem 1.25rem; text-decoration:none;">
+      <!-- Spine -->
+      <div class="shrink-0 rounded-lg flex items-center justify-center text-xl"
+           style="width:44px;height:56px;background:<?= $m['spine'] ?>18;border-left:4px solid <?= $m['spine'] ?>;">
+        <?= $m['icon'] ?>
       </div>
-      <!-- Labels -->
-      <span class="text-xs font-semibold <?= $s['text'] ?> uppercase tracking-wider mb-1"><?= $s['label'] ?></span>
-      <h3 class="text-gray-900 font-bold text-lg leading-tight"><?= $s['title'] ?></h3>
-      <p class="text-gray-500 text-sm mt-1.5 leading-relaxed flex-1"><?= $s['desc'] ?></p>
-      <!-- Arrow -->
-      <div class="mt-4 flex items-center gap-1 text-sm font-semibold <?= $s['text'] ?>
-                  opacity-0 group-hover:opacity-100 transition-all duration-200 -translate-x-1 group-hover:translate-x-0">
-        Acessar <span class="text-base">→</span>
+      <div class="flex-1 min-w-0">
+        <div class="font-bold text-gray-900 text-sm"><?= $m['title'] ?></div>
+        <div class="text-gray-400 text-xs mt-0.5 truncate"><?= $m['desc'] ?></div>
       </div>
+      <div class="text-gray-300 group-hover:text-gray-500 transition-colors text-lg shrink-0">→</div>
     </a>
     <?php endforeach; ?>
-
+    </div>
   </div>
+
 </div>
 
 <?php break; } ?>
