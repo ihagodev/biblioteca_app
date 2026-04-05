@@ -80,37 +80,3 @@ biblioteca_app/
         ├── header.php
         └── footer.php
 ```
-
-## Variáveis de ambiente
-
-| Variável | Onde definir | Descrição |
-|---|---|---|
-| `SUPABASE_KEY` | Railway → Variables | `service_role` key do projeto Supabase |
-
-## Schema do banco
-
-As tabelas estão no schema `lib` do projeto Supabase. O schema é definido em `app/config/supabase.php`:
-
-```php
-define('SUPABASE_SCHEMA', 'lib');
-```
-
-Tabelas principais: `aluno`, `livro`, `autor`, `editora`, `livro_autor`, `emprestimo`, `emprestimo_livro`.
-
-### Configuração obrigatória no Supabase
-
-Por padrão o Supabase só expõe o schema `public` via REST API. É necessário:
-
-**1. Expor o schema `lib`**
-
-Supabase Dashboard → **Integrations → Data API → Settings → Exposed schemas** → adicionar `lib`.
-
-**2. Conceder permissões às roles**
-
-No **SQL Editor**, executar:
-
-```sql
-GRANT USAGE ON SCHEMA lib TO anon, authenticated, service_role;
-GRANT ALL ON ALL TABLES IN SCHEMA lib TO anon, authenticated, service_role;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA lib TO anon, authenticated, service_role;
-```
