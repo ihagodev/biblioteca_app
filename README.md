@@ -2,6 +2,24 @@
 
 Sistema de gerenciamento de biblioteca escolar em PHP puro, com banco de dados hospedado no Supabase (PostgreSQL) acessado via REST API.
 
+## Arquitetura
+
+```mermaid
+flowchart LR
+    user(["Usuário"])
+    cf["Cloudflare\nDNS / Proxy"]
+    railway["Railway\nPHP 8.2 Built-in Server"]
+    gh["GitHub\nrepositório"]
+    sb["Supabase\nREST API (PostgREST)"]
+    pg[("PostgreSQL\nschema: lib")]
+
+    user -->|"biblioteca.ihago.dev"| cf
+    cf -->|"proxy"| railway
+    gh -->|"push → auto deploy"| railway
+    railway -->|"HTTP curl\n/rest/v1/tabela"| sb
+    sb -->|"query"| pg
+```
+
 ## Funcionalidades
 
 | Módulo | O que faz |
