@@ -1,0 +1,9 @@
+# Credenciais locais — nunca commitar
+app/config/config.ini
+
+# Utilitário de desenvolvimento — não vai para produção
+gerar_config.php
+
+# Variáveis de ambiente
+.env
+.env.local
