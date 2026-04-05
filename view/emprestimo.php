@@ -18,7 +18,7 @@ if (isset($_GET['devolver'])) {
         devolverEmprestimoLivro($_GET['devolver']);
         header("Location: ?page=emprestimo"); exit;
     } catch (Exception $e) {
-        echo "Erro ao devolver: " . htmlspecialchars($e->getMessage());
+        $mensagem = "Erro: " . $e->getMessage();
     }
 }
 

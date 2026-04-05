@@ -41,11 +41,7 @@ if (isset($_GET['delete'])) {
         removerAluno($_GET['delete']);
         header("Location: ?page=aluno"); exit;
     } catch (Exception $e) {
-        if ($e->getCode() === '23000' || strpos($e->getMessage(), '23000') !== false) {
-            $mensagem = "Erro: Este aluno possui empréstimos vinculados e não pode ser removido.";
-        } else {
-            $mensagem = "Erro: " . $e->getMessage();
-        }
+        $mensagem = "Erro: " . $e->getMessage();
     }
 }
 

@@ -36,11 +36,7 @@ if (isset($_GET['delete'])) {
         removerLivro($_GET['delete']);
         header("Location: ?page=livro"); exit;
     } catch (Exception $e) {
-        if ($e->getCode() === '23000' || strpos($e->getMessage(), '23000') !== false) {
-            $mensagem = "Erro: Este livro possui empréstimos vinculados e não pode ser removido.";
-        } else {
-            $mensagem = "Erro: " . $e->getMessage();
-        }
+        $mensagem = "Erro: " . $e->getMessage();
     }
 }
 

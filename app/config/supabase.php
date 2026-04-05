@@ -41,6 +41,72 @@ define('SUPABASE_SCHEMA', 'lib');
 
 
 /**
+ * Traduz erros da API do Supabase/PostgreSQL para mensagens amigáveis em português.
+ *
+ * O Supabase retorna um JSON com:
+ *   code    → código de erro PostgreSQL (ex: "23503", "23505")
+ *   message → mensagem técnica em inglês
+ *   detail  → detalhe adicional (ex: "Key (id_aluno)=(5) is not present in table...")
+ *   hint    → sugestão do banco
+ */
+function sbTraduzirErro(array $error): string {
+    $code   = $error['code']    ?? '';
+    $msg    = strtolower($error['message'] ?? '');
+    $detail = strtolower($error['detail']  ?? '');
+
+    // 23503 — FK violation: tentativa de referenciar registro inexistente
+    //         ou de remover/editar registro referenciado por outro
+    if ($code === '23503' || str_contains($msg, 'foreign key constraint')) {
+        // Remoção/edição bloqueada (registro é referenciado por outro)
+        if (str_contains($msg, 'update or delete') || str_contains($msg, 'still referenced')) {
+            if (str_contains($msg, '"aluno"'))   return 'Este aluno possui empréstimos vinculados e não pode ser removido ou alterado.';
+            if (str_contains($msg, '"livro"'))   return 'Este livro possui empréstimos vinculados e não pode ser removido ou alterado.';
+            if (str_contains($msg, '"editora"')) return 'Esta editora está vinculada a livros e não pode ser removida ou alterada.';
+            if (str_contains($msg, '"autor"'))   return 'Este autor está vinculado a livros e não pode ser removido ou alterado.';
+            if (str_contains($msg, '"emprestimo"')) return 'Este empréstimo possui itens vinculados e não pode ser removido.';
+            return 'Este registro está vinculado a outros dados e não pode ser removido ou alterado.';
+        }
+        // Inserção/edição com FK inexistente (ex: id_editora que não existe)
+        if (str_contains($msg, 'is not present in table') || str_contains($detail, 'is not present in table')) {
+            if (str_contains($msg . $detail, '"editora"')) return 'A editora selecionada não existe.';
+            if (str_contains($msg . $detail, '"autor"'))   return 'Um dos autores selecionados não existe.';
+            if (str_contains($msg . $detail, '"aluno"'))   return 'O aluno selecionado não existe.';
+            if (str_contains($msg . $detail, '"livro"'))   return 'Um dos livros selecionados não existe.';
+            return 'Referência inválida: o registro relacionado não foi encontrado.';
+        }
+        return 'Violação de integridade referencial.';
+    }
+
+    // 23505 — Unique violation: valor duplicado em campo único
+    if ($code === '23505' || str_contains($msg, 'duplicate key')) {
+        if (str_contains($msg . $detail, 'isbn'))            return 'Já existe um livro cadastrado com este ISBN.';
+        if (str_contains($msg . $detail, 'registro_aluno'))  return 'Este número de registro já está em uso.';
+        if (str_contains($msg . $detail, 'cpf'))             return 'Já existe um aluno cadastrado com este CPF.';
+        if (str_contains($msg . $detail, 'email'))           return 'Já existe um cadastro com este e-mail.';
+        return 'Já existe um registro com esses dados.';
+    }
+
+    // 23502 — Not-null violation: campo obrigatório não preenchido
+    if ($code === '23502' || str_contains($msg, 'null value in column')) {
+        return 'Um campo obrigatório não foi preenchido.';
+    }
+
+    // 22P02 — Invalid text representation (tipo errado de dado)
+    if ($code === '22P02') {
+        return 'Valor inválido em um dos campos.';
+    }
+
+    // 42501 — Insufficient privilege
+    if ($code === '42501') {
+        return 'Sem permissão para realizar esta operação.';
+    }
+
+    // Fallback: usa a mensagem original do Supabase, sem o prefixo técnico
+    $raw = $error['message'] ?? $error['hint'] ?? 'Erro desconhecido.';
+    return $raw;
+}
+
+/**
  * Faz uma requisição à REST API do Supabase.
  *
  * @param string      $method  Verbo HTTP: GET, POST, PATCH, DELETE
@@ -98,16 +164,15 @@ function sbRequest(string $method, string $table, array $options = []): array {
     if (curl_errno($ch)) {
         $curlError = curl_error($ch);
         curl_close($ch);
-        throw new Exception("Erro de rede (curl): $curlError");
+        throw new Exception("Falha na conexão com o banco de dados. Tente novamente.");
     }
 
     curl_close($ch);
 
-    // HTTP 4xx / 5xx → lança exceção com a mensagem do Supabase
+    // HTTP 4xx / 5xx → lança exceção com mensagem amigável
     if ($httpCode >= 400) {
-        $error = json_decode($response, true);
-        $msg   = $error['message'] ?? $error['hint'] ?? "HTTP $httpCode";
-        throw new Exception("Supabase API: $msg");
+        $error = json_decode($response, true) ?? [];
+        throw new Exception(sbTraduzirErro($error));
     }
 
     if (empty($response) || $response === 'null') return [];

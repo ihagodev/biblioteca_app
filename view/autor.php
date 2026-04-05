@@ -39,11 +39,7 @@ if (isset($_GET['delete'])) {
         deletar('autor', $_GET['delete'], 'id_autor');
         header("Location: ?page=autor"); exit;
     } catch (Exception $e) {
-        if ($e->getCode() === '23000' || strpos($e->getMessage(), '23000') !== false) {
-            $mensagem = "Erro: Este autor está vinculado a livros e não pode ser removido.";
-        } else {
-            $mensagem = "Erro: " . $e->getMessage();
-        }
+        $mensagem = "Erro: " . $e->getMessage();
     }
 }
 

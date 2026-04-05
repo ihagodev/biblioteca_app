@@ -39,11 +39,7 @@ if (isset($_GET['delete'])) {
         deletar('editora', $_GET['delete'], 'id_editora');
         header("Location: ?page=editora"); exit;
     } catch (Exception $e) {
-        if ($e->getCode() === '23000' || strpos($e->getMessage(), '23000') !== false) {
-            $mensagem = "Erro: Esta editora está vinculada a livros e não pode ser removida.";
-        } else {
-            $mensagem = "Erro: " . $e->getMessage();
-        }
+        $mensagem = "Erro: " . $e->getMessage();
     }
 }
 
