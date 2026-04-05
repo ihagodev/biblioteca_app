@@ -13,6 +13,11 @@
   </div>
 </footer>
 
+<script>
+  if (new URLSearchParams(window.location.search).get('random') === '1') {
+    document.querySelector('form[method="POST"]')?.submit();
+  }
+</script>
 </body>
 </html>
 <?php ob_end_flush(); ?>
