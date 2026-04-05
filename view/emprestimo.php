@@ -89,8 +89,8 @@ if ($alunoValor) {
   <?php endif; ?>
 
   <!-- ── FORM CARD ── -->
-  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-    <div class="h-1" style="background: linear-gradient(90deg, #f59e0b, #f97316);"></div>
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+    <div class="h-1 rounded-t-2xl" style="background: linear-gradient(90deg, #f59e0b, #f97316);"></div>
     <div class="p-6 sm:p-7">
       <div class="mb-6">
         <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Novo registro</span>
@@ -110,12 +110,13 @@ if ($alunoValor) {
               <input type="text" class="input-field ss-search"
                      placeholder="Buscar aluno por nome ou curso…" autocomplete="off"
                      value="<?= htmlspecialchars($alunoLabel) ?>">
-              <span class="ss-chevron">▾</span>
+              <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#9ca3af;pointer-events:none;font-size:.7rem;">▾</span>
             </div>
-            <ul class="ss-dropdown">
-              <li class="ss-empty">Nenhum aluno encontrado.</li>
+            <ul class="ss-dropdown" style="position:absolute;z-index:200;width:100%;max-height:220px;overflow-y:auto;background:#fff;border:1.5px solid #e5e7eb;border-radius:.75rem;box-shadow:0 8px 24px rgba(0,0,0,.1);margin-top:4px;padding:4px 0;list-style:none;display:none;">
+              <li style="padding:10px 14px;font-size:.875rem;color:#9ca3af;text-align:center;display:none;" class="ss-empty">Nenhum aluno encontrado.</li>
               <?php foreach ($alunos as $a): ?>
-              <li class="ss-option" data-value="<?= htmlspecialchars($a['registro_aluno']) ?>">
+              <li class="ss-option" data-value="<?= htmlspecialchars($a['registro_aluno']) ?>"
+                  style="padding:9px 14px;font-size:.875rem;color:#374151;cursor:pointer;">
                 <?= htmlspecialchars($a['nm_aluno']) ?> — <?= htmlspecialchars($a['curso']) ?> (Reg. <?= htmlspecialchars($a['registro_aluno']) ?>)
               </li>
               <?php endforeach; ?>
