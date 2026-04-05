@@ -18,12 +18,12 @@
   </script>
   <style>
     /* Fallback inline — garante visual mesmo sem CDN */
-    body { background: #f8fafc; margin: 0; }
+    body { background: #f7f3ef; margin: 0; }
     nav.site-nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-      background: #0f172a;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+      background: #1c1917;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
     }
     .nav-inner {
       max-width: 1280px; margin: 0 auto;
@@ -46,16 +46,16 @@
     .nav-link {
       padding: 7px 14px; border-radius: 8px;
       font-size: 13.5px; font-weight: 500;
-      color: #94a3b8; text-decoration: none;
+      color: #a8a29e; text-decoration: none;
       transition: background 0.15s, color 0.15s;
     }
-    .nav-link:hover { background: rgba(255,255,255,0.07); color: #fff; }
-    .nav-link.active { background: #4f46e5; color: #fff; box-shadow: 0 4px 12px rgba(79,70,229,0.35); }
+    .nav-link:hover { background: rgba(255,255,255,0.06); color: #fafaf9; }
+    .nav-link.active { background: #d97706; color: #fff; box-shadow: 0 4px 12px rgba(217,119,6,0.35); }
     .page-wrap { padding-top: 60px; min-height: 100vh; }
     .page-inner { max-width: 1280px; margin: 0 auto; padding: 2.5rem 1.5rem; }
   </style>
 </head>
-<body class="bg-slate-50 text-gray-900 antialiased">
+<body class="text-gray-900 antialiased" style="background:#f7f3ef;">
 
 <?php $page = $_GET['page'] ?? 'home'; ?>
 
@@ -99,5 +99,5 @@
 </nav>
 
 <!-- Main wrapper -->
-<div class="page-wrap pt-[60px] min-h-screen" style="background:#f8fafc;">
+<div class="page-wrap pt-[60px] min-h-screen" style="background:#f7f3ef;">
   <div class="page-inner max-w-7xl mx-auto px-4 sm:px-6 py-10 animate-fade-in">
