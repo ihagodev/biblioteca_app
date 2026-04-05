@@ -46,7 +46,7 @@ if (isset($_GET['edit'])) {
     $autoresSelecionados = $livroComAutores['autores'] ?? [];
 }
 
-$livros   = listarLivros();
+$livros   = listarLivroCompleto();
 $editoras = listar('editora');
 $autores  = listar('autor');
 
