@@ -81,8 +81,8 @@ $editoras = listar('editora');
   <?php endif; ?>
 
   <!-- ── FORM CARD ── -->
-  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-    <div class="h-1" style="background: linear-gradient(90deg, #f43f5e, #f97316);"></div>
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+    <div class="h-1 rounded-t-2xl" style="background: linear-gradient(90deg, #f43f5e, #f97316);"></div>
     <div class="p-6 sm:p-7">
       <div class="mb-6">
         <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">
@@ -132,7 +132,7 @@ $editoras = listar('editora');
   </div>
 
   <!-- ── TABLE CARD ── -->
-  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
     <div class="px-6 py-4 border-b border-gray-100">
       <div class="flex items-center justify-between mb-3">
         <div>

@@ -202,6 +202,13 @@ select[multiple] { min-height: 144px; }
 /* ── Table row transition ── */
 tbody tr { transition: background-color 0.1s ease; }
 
+/* ── Mobile: reduce table cell padding ── */
+@media (max-width: 639px) {
+  .page-inner { padding: 1rem 0.75rem; }
+  table td, table th { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+  .btn-primary, .btn-ghost { font-size: .8rem; padding: .5rem 1rem; }
+}
+
 /* ── Searchable Select (.ss-wrap) ── */
 .ss-wrap { position: relative; }
 
